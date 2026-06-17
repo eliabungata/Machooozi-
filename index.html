@@ -113,7 +113,6 @@
     border: 1px solid rgba(59, 130, 246, 0.14);
     box-shadow: 0 20px 50px rgba(15, 30, 54, 0.05);
   }
-  /* Hide scrollbar defaults for cleaner aesthetics */
   .card::-webkit-scrollbar { width: 0px; background: transparent; }
 
   .eyebrow {
@@ -227,82 +226,128 @@
     padding: 0 10px;
   }
 
-  /* COMFORTABLE TOUCH TARGET ACTION BUTTON */
+  /* ── HIGHLY DYNAMIC ATTENTION & CURIOSITY BUTTON ── */
+  .btn-container {
+    position: relative;
+    display: inline-block;
+    margin-top: clamp(1.8rem, 5vh, 2.8rem);
+  }
+
   .action-btn {
+    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    background: linear-gradient(135deg, #2563eb, #3b82f6, #60a5fa, #2563eb);
+    gap: 10px;
+    background: linear-gradient(135deg, #2563eb, #3b82f6, #60a5fa, #1d4ed8);
     background-size: 300% 100%;
     color: #ffffff;
     border: none;
-    padding: clamp(14px, 4vw, 18px) clamp(24px, 6vw, 36px);
+    padding: clamp(15px, 4.2vw, 20px) clamp(26px, 6.5vw, 40px);
     font-size: clamp(0.75rem, 2.2vw, 0.85rem);
     font-weight: 900;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
     border-radius: 50px;
     cursor: pointer;
     opacity: 0;
     transform: translateY(20px);
-    transition: opacity 0.8s ease, transform 0.8s ease, box-shadow 0.4s, background 0.4s;
+    transition: opacity 0.8s ease, transform 0.8s ease, box-shadow 0.4s, background-position 0.4s;
     outline: none;
-    margin-top: clamp(1.8rem, 5vh, 2.8rem);
+    z-index: 3;
     -webkit-tap-highlight-color: transparent;
-    animation: blue-pulse 2.2s infinite ease-in-out, gradientFluid 5s linear infinite;
+    /* Composite dynamic animations for attention pulling */
+    animation: magneticPulse 2s infinite ease-in-out, fluidGlow 4s linear infinite;
   }
-  
-  @keyframes gradientFluid {
+
+  /* Infinite attention glow shifts */
+  @keyframes fluidGlow {
     0% { background-position: 0% 50%; }
-    100% { background-position: 100% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Subtle elastic scaling to mimic a living breathing cue */
+  @keyframes magneticPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.04); }
+    100% { transform: scale(1); }
+  }
+
+  /* Dynamic expanding ring radiating out from the button */
+  .btn-ripple {
+    position: absolute;
+    inset: 0;
+    border-radius: 50px;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0;
+    border: 2px solid rgba(59, 130, 246, 0.4);
+    transform: scale(1);
+    transition: opacity 0.3s;
   }
   
+  .action-btn.show ~ .btn-ripple {
+    animation: rippleWave 2.4s infinite cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes rippleWave {
+    0% { transform: scale(0.96); opacity: 0; }
+    15% { opacity: 0.65; }
+    70% { opacity: 0; }
+    100% { transform: scale(1.22, 1.35); opacity: 0; }
+  }
+
   .action-btn .smiley {
-    font-size: clamp(1.1rem, 3.5vw, 1.3rem);
+    font-size: clamp(1.1rem, 3.5vw, 1.35rem);
     letter-spacing: normal;
     display: inline-block;
-    animation: smiley-nod 1.2s infinite alternate ease-in-out;
+    transform-origin: center bottom;
+    animation: smileyWobble 1.5s infinite alternate ease-in-out;
   }
-  
+
   .action-btn span.arrow {
     display: inline-block;
     font-weight: 900;
-    animation: arrow-slide 0.8s infinite alternate ease-in-out;
+    animation: arrowSlide 0.8s infinite alternate ease-in-out;
   }
-  
+
+  /* Micro-interactions on active touches/hovers */
   @media(hover: hover) {
     .action-btn:hover {
-      box-shadow: 0 15px 35px rgba(59, 130, 246, 0.3), 0 0 15px rgba(96, 165, 250, 0.4);
-      transform: translateY(-2px) scale(1.02);
+      background-position: 60% center;
+      box-shadow: 0 15px 35px rgba(29, 78, 216, 0.35), 0 0 22px rgba(96, 165, 250, 0.5);
+      transform: scale(1.05) translateY(-1px);
     }
   }
-  
-  @keyframes blue-pulse {
-    0% { 
-      transform: scale(1); 
-      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.2);
-    }
-    50% { 
-      transform: scale(1.03); 
-      box-shadow: 0 12px 28px rgba(59, 130, 246, 0.35), 0 0 10px rgba(96, 165, 250, 0.2);
-    }
-    100% { 
-      transform: scale(1); 
-      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.2);
-    }
+
+  .action-btn:active {
+    transform: scale(0.97);
+    box-shadow: 0 5px 15px rgba(29, 78, 216, 0.4);
   }
-  @keyframes arrow-slide {
+
+  @keyframes arrowSlide {
     0% { transform: translateX(0); }
-    100% { transform: translateX(4px); }
+    100% { transform: translateX(5px); }
   }
-  @keyframes smiley-nod {
-    0% { transform: scale(1) rotate(-4deg); }
-    100% { transform: scale(1.12) rotate(5deg); }
+
+  @keyframes smileyWobble {
+    0% { transform: scale(1) rotate(-6deg); }
+    100% { transform: scale(1.18) rotate(8deg); }
   }
 
   .show { opacity: 1 !important; transform: none !important; }
-  .hide-btn { opacity: 0 !important; transform: scale(0.5) !important; pointer-events: none !important; margin-top: 0px !important; height: 0px !important; padding: 0px !important; border: none !important; overflow: hidden; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+  
+  /* Smooth collapse transition upon interaction click */
+  .hide-btn-container {
+    opacity: 0 !important;
+    transform: scale(0.4) !important;
+    pointer-events: none !important;
+    margin-top: 0px !important;
+    height: 0px !important;
+    overflow: hidden;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
 </style>
 </head>
 <body>
@@ -329,10 +374,14 @@
   <div class="divider" id="dv"></div>
   <p class="message" id="msg"></p>
   
-  <button class="action-btn" id="actBtn" onclick="unlockSmile(event)">
-    click to unlock your smile <span class="smiley">😉👍</span><span class="arrow">→</span>
-  </button>
+  <div class="btn-container" id="btnContainer">
+    <button class="action-btn" id="actBtn" onclick="unlockSmile(event)">
+      click to unlock your smile <span class="smiley">😉👍</span><span class="arrow">→</span>
+    </button>
+    <div class="btn-ripple"></div>
+  </div>
 
+  <!-- HIDDEN CONTENT SECTION -->
   <div class="hidden-content" id="secretContent">
     <p class="wish" id="wsh">Wishing you nice exams —</p>
     <span class="namesign" id="nm">Misoji.</span>
@@ -416,7 +465,7 @@ function drawNebula() {
 
 /* ── BACKSTAGE STARFIELD ENTITIES ── */
 const starColors = [[15,30,54], [29,78,216], [59,130,246]];
-const stars = Array.from({length:45}, () => { // Reduced count for mobile processing efficiency
+const stars = Array.from({length:45}, () => { 
   const col = starColors[Math.floor(Math.random() * starColors.length)];
   return {
     x:  Math.random() * window.innerWidth,
@@ -462,7 +511,7 @@ function drawStars(t) {
 /* ── CONSTANT BACKGROUND FLOATERS ── */
 const ptColors = ['rgba(59,130,246,', 'rgba(29,78,216,'];
 const syms = ['✦','·','✧'];
-const pts = Array.from({length:8}, () => ({ // Optimized count for smart devices
+const pts = Array.from({length:8}, () => ({ 
   x:  Math.random() * window.innerWidth,
   y:  Math.random() * window.innerHeight + window.innerHeight,
   sz: Math.random() * 1.4 + 1,
@@ -550,18 +599,18 @@ function trackActivity(nx, ny) {
 /* ── UNLOCK SHOCKWAVE INTERACTION ── */
 function unlockSmile(e) {
   e.preventDefault();
+  const container = document.getElementById('btnContainer');
   const btn = document.getElementById('actBtn');
   const msg = document.getElementById('msg');
   const secret = document.getElementById('secretContent');
   
-  btn.classList.add('hide-btn');
+  container.classList.add('hide-btn-container');
   msg.classList.add('expanded');
   
   const rect = btn.getBoundingClientRect();
   const startX = rect.left + rect.width / 2;
   const startY = rect.top + rect.height / 2;
 
-  // Optimized for mobile execution speed
   for (let i = 0; i < 35; i++) {
     const angle = (Math.PI * 2 / 35) * i + (Math.random() - 0.5) * 0.2;
     const speed = Math.random() * 4.0 + 3.0;
