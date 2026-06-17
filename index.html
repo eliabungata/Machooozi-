@@ -9,18 +9,17 @@
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
   :root {
-    --deep-blue:   #0f1e36; /* Deep midnight blue for pristine high-contrast reading */
-    --royal-blue:  #1d4ed8; /* Vibrant sapphire blue for highlights and accents */
-    --light-blue:  #3b82f6; /* Bright, non-dark blue for gradients */
-    --sky-blue:    #60a5fa; /* Soft sky blue for interactive effects */
-    --warm-cream:  #f8fafc; /* Crisp, clean, premium background backing */
+    --deep-blue:   #0f1e36; 
+    --royal-blue:  #1d4ed8; 
+    --light-blue:  #3b82f6; 
+    --sky-blue:    #60a5fa; 
+    --warm-cream:  #f8fafc; 
     --deeptext:    #0a1526; 
   }
 
   html, body { width: 100%; height: 100%; overflow: hidden; position: fixed; }
 
   body {
-    /* LIVING BLUE SUNLIGHT ENGINE */
     background: linear-gradient(-45deg, #f1f5f9, #f8fafc, #e0f2fe, #f0fdfa);
     background-size: 400% 400%;
     animation: sunlightShift 22s ease infinite;
@@ -42,9 +41,11 @@
 
   /* ── CANVASES ── */
   canvas { position: fixed; inset: 0; pointer-events: none; }
-  #bgCanvas { z-index: 0; }
   #nebulaCanvas { z-index: 1; }
   #ptCanvas { z-index: 2; }
+  
+  /* MOVED STAR CANVAS HIGHER: Right behind text inside the card window */
+  #bgCanvas { z-index: 5; } 
   #interactiveCanvas { z-index: 11; } 
 
   /* ── DYNAMIC BLUE AMBIENT CLOUDS ── */
@@ -98,22 +99,29 @@
   .c-br { bottom:16px; right:16px; transform:scale(-1,-1); }
   @media(max-width:480px){ .corner{ display:none; } }
 
-  /* ── MOBILE-OPTIMIZED CARD CONTAINER ── */
+  /* ── MOBILE CARD WITH SEMI-TRANSPARENT GLASS EFFECTS ── */
   .card {
-    position:relative; z-index:10; text-align:center;
+    position:relative; z-index:4; text-align:center;
     width: min(580px, 90vw);
     max-height: 92vh;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     padding: clamp(2rem, 6vh, 4rem) clamp(1.25rem, 5vw, 3rem);
-    background: rgba(255, 255, 255, 0.92); 
+    /* High clarity glass backdrop to showcase text-level pass stars */
+    background: rgba(255, 255, 255, 0.45); 
     border-radius: 20px;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(59, 130, 246, 0.14);
-    box-shadow: 0 20px 50px rgba(15, 30, 54, 0.05);
+    backdrop-filter: blur(35px);
+    -webkit-backdrop-filter: blur(35px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 30px 60px rgba(15, 30, 54, 0.04), inset 0 1px 1px rgba(255, 255, 255, 0.6);
   }
   .card::-webkit-scrollbar { width: 0px; background: transparent; }
+
+  /* ALL TEXT SHIELDED AT Z-INDEX 6 SO STARS ROTATE BEHIND THEM EXCLUSIVELY */
+  .eyebrow, .headline, .divider, .message, .btn-container, .hidden-content {
+    position: relative;
+    z-index: 6;
+  }
 
   .eyebrow {
     font-size: clamp(0.75rem, 2.2vw, 0.95rem);
@@ -142,7 +150,7 @@
 
   /* DIVIDER */
   .divider {
-    position: relative; height: 1px; 
+    height: 1px; 
     margin: clamp(1.5rem, 4vh, 2.2rem) auto;
     width: 0; max-width: 200px;
     background: linear-gradient(90deg, transparent, rgba(29,78,216,0.3), rgba(96,165,250,0.4), transparent);
@@ -156,7 +164,7 @@
     font-size: clamp(1.4rem, 4.8vw, 2.1rem);
     font-weight: 400;
     font-style: italic; line-height: 1.5;
-    color: rgba(15, 30, 54, 0.85); 
+    color: rgba(15, 30, 54, 0.88); 
     margin-bottom: 0px;
     word-spacing: normal; letter-spacing: 0.005em;
     transition: margin 0.5s ease, color 0.5s ease;
@@ -228,13 +236,11 @@
 
   /* ── HIGHLY DYNAMIC ATTENTION & CURIOSITY BUTTON ── */
   .btn-container {
-    position: relative;
     display: inline-block;
     margin-top: clamp(1.8rem, 5vh, 2.8rem);
   }
 
   .action-btn {
-    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -254,33 +260,29 @@
     transform: translateY(20px);
     transition: opacity 0.8s ease, transform 0.8s ease, box-shadow 0.4s, background-position 0.4s;
     outline: none;
-    z-index: 3;
+    z-index: 7;
     -webkit-tap-highlight-color: transparent;
-    /* Composite dynamic animations for attention pulling */
     animation: magneticPulse 2s infinite ease-in-out, fluidGlow 4s linear infinite;
   }
 
-  /* Infinite attention glow shifts */
   @keyframes fluidGlow {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
   }
 
-  /* Subtle elastic scaling to mimic a living breathing cue */
   @keyframes magneticPulse {
     0% { transform: scale(1); }
     50% { transform: scale(1.04); }
     100% { transform: scale(1); }
   }
 
-  /* Dynamic expanding ring radiating out from the button */
   .btn-ripple {
     position: absolute;
     inset: 0;
     border-radius: 50px;
     pointer-events: none;
-    z-index: 1;
+    z-index: 6;
     opacity: 0;
     border: 2px solid rgba(59, 130, 246, 0.4);
     transform: scale(1);
@@ -312,7 +314,6 @@
     animation: arrowSlide 0.8s infinite alternate ease-in-out;
   }
 
-  /* Micro-interactions on active touches/hovers */
   @media(hover: hover) {
     .action-btn:hover {
       background-position: 60% center;
@@ -338,7 +339,6 @@
 
   .show { opacity: 1 !important; transform: none !important; }
   
-  /* Smooth collapse transition upon interaction click */
   .hide-btn-container {
     opacity: 0 !important;
     transform: scale(0.4) !important;
@@ -381,7 +381,6 @@
     <div class="btn-ripple"></div>
   </div>
 
-  <!-- HIDDEN CONTENT SECTION -->
   <div class="hidden-content" id="secretContent">
     <p class="wish" id="wsh">Wishing you nice exams —</p>
     <span class="namesign" id="nm">Misoji.</span>
@@ -463,47 +462,62 @@ function drawNebula() {
   });
 }
 
-/* ── BACKSTAGE STARFIELD ENTITIES ── */
+/* ── RADIAL STARS: ALIGNED UNDER THE CENTRAL TEXTS ── */
 const starColors = [[15,30,54], [29,78,216], [59,130,246]];
-const stars = Array.from({length:45}, () => { 
-  const col = starColors[Math.floor(Math.random() * starColors.length)];
-  return {
-    x:  Math.random() * window.innerWidth,
-    y:  Math.random() * window.innerHeight,
-    ox: 0, oy: 0, 
-    r:  Math.random() * 1.2 + 0.6,
-    op: Math.random() * 0.35 + 0.2,
-    sp: Math.random() * 0.005 + 0.002,
-    ph: Math.random() * Math.PI * 2,
-    col
-  };
-});
+const stars = [];
+const maxStars = 55;
 
-function drawStars(t) {
+function createStar() {
+  const angle = Math.random() * Math.PI * 2;
+  const speed = Math.random() * 1.5 + 0.5;
+  return {
+    x: 0, 
+    y: 0,
+    angle: angle,
+    speed: speed,
+    r: 0.1, 
+    opacity: 0,
+    col: starColors[Math.floor(Math.random() * starColors.length)]
+  };
+}
+
+for (let i = 0; i < maxStars; i++) {
+  let s = createStar();
+  s.x = Math.random() * Math.max(window.innerWidth, window.innerHeight) * 0.6; 
+  s.opacity = Math.random() * 0.6;
+  s.r = (s.x * 0.0035);
+  stars.push(s);
+}
+
+function drawStars() {
   bgX.clearRect(0, 0, bgC.width, bgC.height);
-  stars.forEach(s => {
-    if (mouse.active) {
-      const dx = mouse.x - s.x;
-      const dy = mouse.y - s.y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist < 120) {
-        const force = (120 - dist) / 120;
-        s.ox += (mouse.vx * force * 0.8 - s.ox) * 0.08;
-        s.oy += (mouse.vy * force * 0.8 - s.oy) * 0.08;
-      } else {
-        s.ox += (0 - s.ox) * 0.04;
-        s.oy += (0 - s.oy) * 0.04;
-      }
-    } else {
-      s.ox += (0 - s.ox) * 0.04;
-      s.oy += (0 - s.oy) * 0.04;
+  
+  const centerX = bgC.width / 2;
+  const centerY = bgC.height / 2;
+
+  stars.forEach((s, idx) => {
+    s.speed += 0.035; 
+    s.x += s.speed;
+    s.r = Math.max(0.2, s.x * 0.0045);
+    
+    if (s.x < 80) {
+      s.opacity = Math.min(0.65, s.x / 80);
+    } else if (s.x > Math.max(centerX, centerY) * 0.8) {
+      s.opacity *= 0.92;
     }
 
-    const a = s.op * (0.4 + 0.6 * Math.sin(t * s.sp + s.ph));
+    const currentX = centerX + Math.cos(s.angle) * s.x;
+    const currentY = centerY + Math.sin(s.angle) * s.x;
+
+    if (currentX < -50 || currentX > bgC.width + 50 || currentY < -50 || currentY > bgC.height + 50 || s.opacity <= 0.01) {
+      stars[idx] = createStar();
+      return;
+    }
+
     const [r,g,b] = s.col;
     bgX.beginPath();
-    bgX.arc(s.x + s.ox, s.y + s.oy, s.r, 0, Math.PI*2);
-    bgX.fillStyle = `rgba(${r},${g},${b},${a.toFixed(3)})`;
+    bgX.arc(currentX, currentY, s.r, 0, Math.PI * 2);
+    bgX.fillStyle = `rgba(${r},${g},${b},${s.opacity.toFixed(3)})`;
     bgX.fill();
   });
 }
@@ -532,35 +546,6 @@ function drawPts() {
     ptX.fillStyle = p.col + p.op + ')';
     ptX.fillText(p.s, p.x, p.y);
   });
-}
-
-/* ── SHOOTING STREAKS ── */
-let shoot = null;
-function launchShoot() {
-  shoot = { x: Math.random() * 0.6, y: Math.random() * 0.3, len: Math.random() * 0.08 + 0.04, speed: Math.random() * 0.003 + 0.002, op: 0.5 };
-}
-setTimeout(launchShoot, 3000);
-setInterval(launchShoot, 16000 + Math.random() * 9000);
-
-function drawShoot() {
-  if (!shoot) return;
-  shoot.x += shoot.speed;
-  shoot.y += shoot.speed * 0.45;
-  shoot.op -= 0.015;
-  if (shoot.op <= 0) { shoot = null; return; }
-  const x1 = shoot.x * bgC.width;
-  const y1 = shoot.y * bgC.height;
-  const x0 = x1 - shoot.len * bgC.width;
-  const y0 = y1 - shoot.len * bgC.height * 0.45;
-  const grd = bgX.createLinearGradient(x0, y0, x1, y1);
-  grd.addColorStop(0, `rgba(255,255,255,0)`);
-  grd.addColorStop(1, `rgba(59,130,246,${shoot.op})`);
-  bgX.beginPath();
-  bgX.moveTo(x0, y0);
-  bgX.lineTo(x1, y1);
-  bgX.strokeStyle = grd;
-  bgX.lineWidth = 1.0;
-  bgX.stroke();
 }
 
 /* ── INTERACTIVE BLUE EMBER TRAIL ── */
@@ -671,11 +656,8 @@ function drawInteractiveTrail() {
 }
 
 /* ── ANIMATION LOOP ── */
-let t = 0;
 (function loop() {
-  t++;
-  drawStars(t);
-  drawShoot();
+  drawStars();
   drawPts();
   drawInteractiveTrail();
   requestAnimationFrame(loop);
