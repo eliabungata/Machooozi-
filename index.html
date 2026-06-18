@@ -53,6 +53,7 @@
     width: 100%;
     display: flex;
     justify-content: center;
+    will-change: transform;
   }
 
   .card {
@@ -92,7 +93,7 @@
     100% { transform: translate(30%, 30%) rotate(45deg); opacity: 0; }
   }
 
-  /* TEXT ARCHITECTURE */
+  /* TEXT ARCHITECTURE WITH LAYER ACCELERATION */
   .eyebrow, .headline, .divider, .message, .btn-container, .hidden-content {
     position: relative;
     z-index: 10;
@@ -106,6 +107,7 @@
     opacity: 0; transform: translateY(15px);
     transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1);
     margin-bottom: clamp(1rem, 3vh, 1.5rem);
+    will-change: transform, opacity;
   }
 
   .headline {
@@ -117,6 +119,7 @@
     opacity: 0; transform: translateY(20px);
     transition: opacity 1.2s 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 1.2s 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     margin-bottom: 0.2rem;
+    will-change: transform, opacity;
   }
   .headline em {
     font-style: italic; font-weight: 400;
@@ -131,6 +134,7 @@
     width: 0; max-width: 240px;
     background: linear-gradient(90deg, transparent, rgba(139,92,246,0.5), rgba(59,130,246,0.5), transparent);
     transition: width 1.5s 0.4s cubic-bezier(0.22,1,0.36,1);
+    will-change: width;
   }
   .divider.open { width: 240px; }
 
@@ -165,6 +169,7 @@
     transform: translateY(12px) scale(0.9);
     filter: blur(4px);
     transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.5s ease;
+    will-change: transform, opacity, filter;
   }
   .char.reveal-on {
     opacity: 1;
@@ -244,6 +249,7 @@
     max-width: 100%; 
     -webkit-tap-highlight-color: transparent;
     animation: dynamicPulse 2s infinite ease-in-out, fluidGlow 4s linear infinite;
+    will-change: transform, opacity;
   }
 
   .action-btn .btn-text-segment {
@@ -460,19 +466,17 @@ const customName = urlParams.get('name') || "Misoji";
 const customHeadline = urlParams.get('headline') || "";
 const customWish = urlParams.get('wish') || "Well it looks just like —";
 const customSign = urlParams.get('sign') || "You.";
-
-// FIXED FALLBACK CONFIGURATION STRING: Changed "how" to "what" 
 const customMessage = urlParams.get('message') || "Have you ever wondered what a beautiful moment looks like ?";
 
 document.getElementById('hl').innerHTML = `${customName} <em>${customHeadline}</em>`;
 document.getElementById('wsh').textContent = customWish;
 document.getElementById('nm').textContent = customSign;
 
-/* ── KINETIC CHARACTER INJECTION (WITH REINFORCED WRAPPING) ── */
+/* ── OPTIMIZATION: DOCUMENT FRAGMENT INJECTION (Prevents DOM Layout Thrashing) ── */
 const msgEl = document.getElementById('msg');
 const charElements = [];
+const fragment = document.createDocumentFragment();
 
-// FIXED INTERPRETATION LOOP: Targets 'customMessage' string to inject "what" explicitly
 const words = customMessage.split(" ");
 words.forEach((word, wIdx) => {
   if (word.length === 0) return;
@@ -488,16 +492,17 @@ words.forEach((word, wIdx) => {
     charElements.push(span);
   });
   
-  msgEl.appendChild(wordSpan);
+  fragment.appendChild(wordSpan);
   
   if (wIdx < words.length - 1) {
     const spaceSpan = document.createElement('span');
     spaceSpan.className = 'char';
     spaceSpan.innerHTML = '&nbsp;'; 
-    msgEl.appendChild(spaceSpan);
+    fragment.appendChild(spaceSpan);
     charElements.push(spaceSpan);
   }
 });
+msgEl.appendChild(fragment);
 
 /* ── CANVAS DESIGN MAPS ── */
 const bgC = document.getElementById('bgCanvas');
@@ -703,18 +708,30 @@ function unlockSmile(e) {
   setTimeout(() => { secret.classList.add('reveal'); }, 400);
 }
 
+/* ── OPTIMIZATION: Clean Array Filter Cycle (Prevents Garbage Collection Glitches) ── */
 function drawInteractiveTrail() {
   intX.clearRect(0, 0, intC.width, intC.height);
-  for (let i = trailParticles.length - 1; i >= 0; i--) {
-    let p = trailParticles[i];
-    p.x += p.vx; p.y += p.vy; p.alpha -= 0.015; p.rotation += p.rotationSpeed;
-    if (p.alpha <= 0) { trailParticles.splice(i, 1); continue; }
+  
+  trailParticles = trailParticles.filter(p => {
+    p.x += p.vx; 
+    p.y += p.vy; 
+    p.alpha -= 0.015; 
+    p.rotation += p.rotationSpeed;
     
-    intX.save(); intX.translate(p.x, p.y); intX.rotate(p.rotation);
-    intX.font = `${p.size}px serif`; intX.fillStyle = p.color + p.alpha + ')';
-    intX.textAlign = 'center'; intX.textBaseline = 'middle';
-    intX.fillText(p.shape, 0, 0); intX.restore();
-  }
+    if (p.alpha <= 0) return false;
+    
+    intX.save(); 
+    intX.translate(p.x, p.y); 
+    intX.rotate(p.rotation);
+    intX.font = `${p.size}px serif`; 
+    intX.fillStyle = p.color + p.alpha + ')';
+    intX.textAlign = 'center'; 
+    intX.textBaseline = 'middle';
+    intX.fillText(p.shape, 0, 0); 
+    intX.restore();
+    
+    return true;
+  });
 }
 
 (function animationCore() {
