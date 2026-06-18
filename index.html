@@ -50,6 +50,9 @@
     perspective: 1000px;
     z-index: 5;
     transition: transform 0.1s ease-out;
+    width: 100%;
+    display: flex;
+    justify-content: center;
   }
 
   .card {
@@ -58,7 +61,7 @@
     width: min(580px, 90vw);
     max-height: 92vh;
     overflow-y: auto;
-    padding: clamp(2.5rem, 7vh, 4.5rem) clamp(1.5rem, 6vw, 3.5rem);
+    padding: clamp(2.5rem, 7vh, 4.5rem) clamp(1.2rem, 5vw, 3.5rem);
     background: rgba(15, 23, 42, 0.45); 
     border-radius: 24px;
     backdrop-filter: blur(40px);
@@ -196,25 +199,28 @@
     letter-spacing: 0.03em;
   }
 
-  /* BUTTON STYLING */
+  /* BUTTON STYLING & RESPONSIEVNESS */
   .btn-container {
     display: inline-block;
     margin-top: clamp(2rem, 6vh, 3.2rem);
     position: relative;
+    max-width: 100%;
   }
 
   .action-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    flex-wrap: wrap; /* Allows text lines to drop down naturally on tight screens */
+    gap: 8px 4px;   /* Clean spacing when content breaks into lines */
     background: linear-gradient(135deg, #4f46e5, #7c3aed, #2563eb, #4f46e5);
     background-size: 300% 100%;
     color: #ffffff;
     border: none;
-    padding: clamp(16px, 4.5vw, 22px) clamp(24px, 6vw, 38px);
-    font-size: clamp(0.72rem, 2.1vw, 0.82rem);
+    padding: clamp(14px, 4vw, 20px) clamp(20px, 5vw, 34px);
+    font-size: clamp(0.7rem, 2vw, 0.82rem);
     font-weight: 600;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     border-radius: 50px;
     cursor: pointer;
@@ -222,13 +228,14 @@
     transform: translateY(25px);
     transition: opacity 0.8s ease, transform 0.8s ease, box-shadow 0.4s, background-position 0.4s;
     outline: none;
+    max-width: 100%;
     -webkit-tap-highlight-color: transparent;
     animation: dynamicPulse 2s infinite ease-in-out, fluidGlow 4s linear infinite;
   }
 
   .action-btn .btn-text-segment {
     display: inline-block;
-    line-height: 1;
+    line-height: 1.2;
     white-space: nowrap;
   }
 
@@ -250,9 +257,8 @@
     align-items: center;
     justify-content: center;
     position: relative;
-    width: 44px;
+    width: 36px;
     height: 24px;
-    margin: 0 6px;
     pointer-events: none;
   }
 
@@ -278,20 +284,19 @@
     100% { transform: translate(-50%, -50%) scale(5.5); opacity: 0; }
   }
 
-  /* Right Hand Index Cursor Silhouette (Matches image_d2c386) */
+  /* Right Hand Index Cursor Silhouette */
   .pointer-hand-svg {
     position: absolute;
     top: 50%;
     left: 40%;
-    width: 25px;
-    height: 25px;
+    width: 24px;
+    height: 24px;
     fill: var(--starlight);
     filter: drop-shadow(-2px 4px 5px rgba(0,0,0,0.45));
     transform-origin: center center;
     animation: rightHandIndexTap 1.6s infinite cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 
-  /* Taps forward on a 45deg axis and lifts back smoothly */
   @keyframes rightHandIndexTap {
     0% { transform: translate(18%, 28%) rotate(-45deg) scale(1.05); }
     35% { transform: translate(-25%, -15%) rotate(-45deg) scale(0.82); filter: drop-shadow(-1px 2px 2px rgba(0,0,0,0.55)); }
@@ -327,7 +332,7 @@
     vertical-align: middle;
     transform-origin: center bottom;
     animation: wobble 1.5s infinite alternate ease-in-out;
-    margin-left: 6px;
+    margin-left: 4px;
     line-height: 1;
   }
 
