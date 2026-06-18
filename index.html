@@ -149,6 +149,12 @@
     color: var(--starlight); 
   }
 
+  /* Keep full words together, preventing mid-word letter breaks */
+  .word-wrapper {
+    display: inline-block;
+    white-space: nowrap;
+  }
+
   .char {
     display: inline-block;
     opacity: 0;
@@ -456,15 +462,35 @@ document.getElementById('hl').innerHTML = `${customName} <em>${customHeadline}</
 document.getElementById('wsh').textContent = customWish;
 document.getElementById('nm').textContent = customSign;
 
-/* ── KINETIC CHARACTER INJECTION ── */
+/* ── KINETIC CHARACTER INJECTION (WITH FIXED WORD WRAPPING) ── */
 const msgEl = document.getElementById('msg');
 const charElements = [];
-customMessage.split("").forEach(char => {
-  const span = document.createElement('span');
-  span.className = 'char';
-  span.innerHTML = char === " " ? "&nbsp;" : char; 
-  msgEl.appendChild(span);
-  charElements.push(span);
+
+// Split into words first to create clean wrap anchors
+const words = customMessage.split(" ");
+words.forEach((word, wIdx) => {
+  const wordSpan = document.createElement('span');
+  wordSpan.className = 'word-wrapper';
+  
+  // Inject characters into this word container
+  word.split("").forEach(char => {
+    const span = document.createElement('span');
+    span.className = 'char';
+    span.textContent = char;
+    wordSpan.appendChild(span);
+    charElements.push(span);
+  });
+  
+  msgEl.appendChild(wordSpan);
+  
+  // Append a standard spacing character between words
+  if (wIdx < words.length - 1) {
+    const spaceSpan = document.createElement('span');
+    spaceSpan.className = 'char';
+    spaceSpan.innerHTML = '&nbsp;';
+    msgEl.appendChild(spaceSpan);
+    charElements.push(spaceSpan);
+  }
 });
 
 /* ── CANVAS DESIGN MAPS ── */
@@ -605,7 +631,7 @@ function triggerCinematicClimax() {
     ambientDroneGain.gain.cancelScheduledValues(time);
     ambientDroneGain.gain.setValueAtTime(ambientDroneGain.gain.value, time);
     ambientDroneGain.gain.linearRampToValueAtTime(0.12, time + 0.1);
-    ambientDroneGain.gain.exponentialRampToValueAtTime(0.0001, time + 4.0); // Smooth drone fade within 4 seconds
+    ambientDroneGain.gain.exponentialRampToValueAtTime(0.0001, time + 4.0); 
   }
 
   const romanticScale = [174.61, 220.00, 261.63, 329.63, 392.00, 440.00];
@@ -621,7 +647,7 @@ function triggerCinematicClimax() {
 
     gainNode.gain.setValueAtTime(0, time + noteDelay);
     gainNode.gain.linearRampToValueAtTime(0.14, time + noteDelay + 0.05); 
-    gainNode.gain.exponentialRampToValueAtTime(0.0001, time + noteDelay + 3.2); // Tail components decay beautifully by 3.2s
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, time + noteDelay + 3.2); 
 
     osc.connect(gainNode);
     gainNode.connect(audioCtx.destination);
@@ -632,7 +658,6 @@ function triggerCinematicClimax() {
 }
 
 function startStarTwinkleGenerator() {
-  // Disabled generator pattern to ensure complete silence after the click sequence
   return;
 }
 
@@ -641,10 +666,8 @@ function unlockSmile(e) {
   e.preventDefault();
   triggerCinematicClimax();
 
-  // Flag to immediately reject any further touch/click attempts to start audio
   isGenerativePlaying = false; 
 
-  // Master fade block: shut down audio context entirely after 4.5 seconds
   setTimeout(() => {
     isAudioActive = false;
     if (audioCtx && audioCtx.state !== 'closed') {
